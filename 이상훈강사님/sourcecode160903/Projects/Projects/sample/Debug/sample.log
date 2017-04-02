@@ -1,0 +1,20 @@
+﻿빌드 시작: 2016-08-05 오후 7:35:54
+     1>2 노드의 "C:\Users\Bitcamp\documents\visual studio 2010\Projects\sample\sample.vcxproj" 프로젝트(build 대상)입니다.
+     1>InitializeBuildStatus:
+         "AlwaysCreate"이(가) 지정되었기 때문에 "Debug\sample.unsuccessfulbuild"을(를) 만들고 있습니다.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt 160803.c
+         160803.c
+     1>c:\users\bitcamp\documents\visual studio 2010\projects\sample\160803.c(15): warning C4716: 'preorder' : 값을 반환해야 합니다.
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Bitcamp\documents\visual studio 2010\Projects\sample\Debug\sample.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST:NO /DEBUG /PDB:"C:\Users\Bitcamp\documents\visual studio 2010\Projects\sample\Debug\sample.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Bitcamp\documents\visual studio 2010\Projects\sample\Debug\sample.lib" /MACHINE:X86 Debug\160803.obj
+     1>160803.obj : warning LNK4075: '/EDITANDCONTINUE'이(가) '/INCREMENTAL:NO' 사양으로 인해 무시됩니다.
+         sample.vcxproj -> C:\Users\Bitcamp\documents\visual studio 2010\Projects\sample\Debug\sample.exe
+       FinalizeBuildStatus:
+         "Debug\sample.unsuccessfulbuild" 파일을 삭제하고 있습니다.
+         "Debug\sample.lastbuildstate"에 연결(touching)하고 있습니다.
+     1>"C:\Users\Bitcamp\documents\visual studio 2010\Projects\sample\sample.vcxproj" 프로젝트를 빌드했습니다(build 대상).
+
+빌드했습니다.
+
+경과 시간: 00:00:00.26

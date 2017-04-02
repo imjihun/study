@@ -1,0 +1,166 @@
+1. 홈디렉토리 -> .vimrc 작성
+
+2. 홈디렉토리 -> mkcscope.sh 작성
+
+3. wget url/linux-4.7.2.gz
+
+4. tar zxvf linux-4.7.2.gz
+z=gzip
+x=압축해제
+v=view
+f=force
+
+5. cp mkcscope.sh /usr/local/bin/
+
+리눅스압축해제한 폴더에서
+6. sudo apt-get install ctags cscope
+
+7. ctags -R
+
+8. mkcscope.sh
+
+9. vi -t task_struct
+
+10. 151
+
+
+
+1
+rq = Run Queue로 cpu마다 1개씩 가지고 있다.
+실제 Task(Process 및 Thread)는 모두 여기에 올라간다.
+System Programming에서 Process를 다루는 작업
+즉, fork()등의 작업을 수행할때
+이 Run Queue의 용도에 대해서 자세하게 알아보게 될 것이다.
+
+2
+스케쥴러와 관련된 우선순위, 정적 우선순위와 동적 우선순위가 있다.
+Linux는 기본적으로 140개의 우선순위를 가지고 있다.
+100개는 정적인 우선순위 이며 나머지 40개가 동적인 우선순위를 가진다.
+정적인 녀석들은 우선순위가 변경되지 않으며
+동적인 녀석들은 Keyboard, Mouse등의 Interrupt 발생으로 인해
+우선순위가 올라갔다 내려갔다 하게된다.
+
+3
+Linux Kernel은 Task를 1개 생성할 때마다 task_struct 구조체가 생성되게 된다.
+fork()를 수행할 경우 자식 프로세스들이 여럿 생기는데
+이 녀석들을 관리하기 위해서 연결리스트가 필요할 것이다.
+그 연결리스트가 바로 아래 보이는 list_head tasks부분이다.
+
+4
+rb = Red Black Tree부분에서 rb_node이므로
+실제 Red Black Tree에서 Node부분을 의미한다.
+자세한 사항은 드라이버쪽에 들어가서...
+
+5
+범용 운영체제 (Linux, Windows, Mac)는 필수적으로 가상메모리(VM)과 물리메모리(PM)을 가지게 된다.
+Firmware(펌웨어)의 경우에는 MMU(Memory Management Unit)이 없기 때문에 Linux, Windows, Mac을 올릴수 없다.
+즉, 모터를 제어한다거나 레이더 신호를 수신한다거나 하는 작업을 수행할 때는 Linux등의 범용 OS를 활용할수없다.
+기본적으로 펌웨어는 MPU(Memory Protection Unit)을 활용하여 메모리를 보호하며
+현재 우리는 Linux Kernel을 사용하고 있으므로 MMU에 기반한 동작을 하게 된다.
+이것의 핵심은 Paging(페이징) 메커니즘인데 우리가 실제 디버깅하면서
+봤던 변수의 주소들이 실제 장치에서 사용하는 물리 주소가 아니란 것이다.
+예로 0xFFF00000 이라는 주소가 있다고 하면
+12bit, 10bit, 10bit 페이징 메커니즘에 의해서
+맨 마지막 인덱스 -> 맨 처음 인덱스 -> 맨 처음 인덱스 를 통해서
+실제 장치의 물리 메모리에 접근하게 된다.
+(이 부분에 대한 자세한 설명은 추후 하도록함)
+지금 위에서 이야기한 모든 내용을 관리하는 구조체가 바로 아래보이는 mm_struct 구조체이다
+
+6
+pid는 Task 자체의 주민등록번호라고 생각하면 된다.
+모든 프로세스는 자기 자신의 고유한 번호를 가진다.
+tgid는 Group의 번호라고 생각하면 된다.
+사실 pid와 tgid를 활용해서
+Thread의 Leader가 누구인지 알 수 있다.
+쉽게 생각하면 삼성 하면 ? 이건희
+tgid = 이건희(삼성), pid = 이건희(대빵)
+tgid = 이건희(삼성), pid = 김대리(직원)
+이런 구조를 보면 Thread의 Leader는
+당연히 tgid값과 pid값이 같은 녀석이란 것을 쉽게 알 수 있다.
+
+7
+Stack Over Flow공격을 방어하기 위한 스택 까나리!
+
+8
+주석에도 적혀 있지만 open file에 대한 정보다
+여기 안쪽을 보면 우리가 System Programming에서
+배웠던 open, read, write, lseek등을 살펴볼 수 있다.
+아주 재미있게도 이녀석들은 함수 포인터로 구현되어 있다.
+그 이유는 무엇일까? 바로 Device Driver를 위해서다.
+Kernel을 모르고서는 Device Driver를 만들 수 없는 이유다.
+아무튼 이 안쪽을 살펴보면 File Descriptor(FD)라는 녀석이
+포인터 배열 형태로 선언되어 있는것을 살펴볼 수 있고,
+f_pos라는 변수를 통해서
+lseek의 File Pointer를 제어하는 것을 알 수 있을 것이다.
+그리고 이 안쪽에 있는 구조체 포인터들을 더 따라서 들어가게 되면 하드 디스크의
+핵심 구조체인 super_block을 볼 수 있게 된다.
+요건 하드 디스크 개발하고자 한다면 더 깊게 파면 된다.
+
+9
+수업중에 배울 비동기 처리의 핵심 부분을 맡은 녀석이다.
+예전에 함수 포인터 수업할 때 봤던 녀석인데
+void (* signal)(int signum, void (* handler)(int))
+위의 프로토타입을 가진 signal과 관련된 커널 구조체들이다.
+어떤 키보드가 눌렀느냐에 따라 적절한 동작을 할 수 있도록
+즉, 비동기 패턴을 구사할 수 있도록 만들어준다.
+
+10
+Interrupt와 관계된 부분들이다.
+Interrupt란 무엇일까?
+아주 쉽게 생각하면 되는데, 다들 밤에 몰컴 해봤을 것이다.
+몰컴하다가 부모님이 떴다면? 어떻게 할것인가?
+엄크 상활에 대처하기 위해 모니터를 끄고 자는척!
+게임 하다가 탈주하고 난리 나는 것인데
+바로 이런 상황이 Interrupt이다.
+즉, 뭔가 작업하다가 그 도중에 다 중단하고
+가장 급한 일을 처리하는 것이 Interrupt라고 생각하면 된다.
+(그만큼 엄크가 위험하다)
+실제 임베디드 환경에서는 전기 신호를 통해 수신되는 신호들이라고 생각하면 된다.
+말이 어렵다면 센서로부터 들어오는 신호라고 생각하면됨
+(물론 펌웨어 단에서는 ADC로 처리한다)
+
+11
+NUMA 얘기가 나오니 한 번 꺼내는 것인데
+메모리 구조에는 크게 UMA와 NUMA가 존재한다
+Intel 이 초창기 i계열의 CPU를 개발하기 전까지
+모든 PC용 CPU들은 UMA구조를 따라갔다.
+물론 임베디드용 CPU들은 Heterogeneous Architecture를
+오래전부터 채택해왔던지라 NUMA구조가 많이들 있었다.
+그러나 병렬 처리를 극대화 하고자 했던 Intel은
+CPU구조를 NUMA형식으로 바꾸고 i3, i5, i7등의 제품을 만든다.
+UMA의 핵심적인 특징이라면
+Memory접근 속도가 일치하는 Bank가 단 1개 뿐이다.
+NUMA는 Memory접근 속도가 다른 녀석들이 꽤 존재해서 여러개의 Bank로 구성되는 구조를 의미한다.
+
+12
+이전에 수업중간에 Multi-Tasking을 논하기 위해서
+Context Switching에 대한 내용을 설명했던 적이있다.
+이내용에서 핵심은 사용하던 Register들을
+어딘가에 보관해야 한다고 했었는데
+그 보관하는 위치가 바로 여기다.
+
+
+//////////////////////files_struct 정의부
+13
+우리가 System Programming 할 때
+open()을 이용해서 만들었던 fd가 바로 이놈
+open()의 반환값을 fd_array[이거]
+
+////
+vi에서 검색
+명령 모드에 놓고 /'찾고싶은거'
+아래로 n / 위로 N
+
+ctrl b
+u 되돌리기
+ctrl r 앞으로가기
+
+yy복사
+p붙이기
+dd삭제
+d10d 10줄삭제
+
+
+ctrl+]
+q
+

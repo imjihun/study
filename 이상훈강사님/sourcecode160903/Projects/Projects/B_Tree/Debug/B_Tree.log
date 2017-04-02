@@ -1,0 +1,4 @@
+﻿  RBtreeTeacher.cpp
+e:\study\이상훈강사님\sourcecode160903\projects\projects\b_tree\rbtreeteacher.cpp(474): warning C4477: 'printf' : 서식 문자열 '%x'에 'unsigned int' 형식의 인수가 필요하지만 variadic 인수 1의 형식이 'rb_node_y *'입니다.
+  B_Tree.vcxproj -> E:\study\이상훈강사님\sourcecode160903\Projects\Projects\B_Tree\Debug\B_Tree.exe
+  B_Tree.vcxproj -> E:\study\이상훈강사님\sourcecode160903\Projects\Projects\B_Tree\Debug\B_Tree.pdb (Full PDB)

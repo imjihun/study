@@ -1,0 +1,51 @@
+
+
+
+
+mpi설치
+
+*OpenMPI(슈퍼컴퓨팅 라이브러리) 설치 방법
+wget https://www.open-mpi.org/software/ompi/v2.0/downloads/openmpi-2.0.0.tar.gz
+
+tar zxvf openmpi-2.0.0.tar.gz
+
+cd openmpi-2.0.0
+
+./configure --prefix=/opt/openmpi
+
+make all
+
+sudo make install
+
+sudo vi /etc/profile.d/openmpi.sh
+{
+OPENMPI_PATH=/opt/openmpi
+MPI_HOME=${OPENMPI_PATH}
+if ! echo ${PATH} | /bin/grep -q ${OPENMPI_PATH}/bin; then
+	PATH=${OPENMPI_PATH}/bin:${PATH}
+}
+
+source /etc/profile.d/openmpi.sh
+
+sudo vi /etc/ld.so.conf.d/openmpi.conf
+{
+/opt/openmpi/lib
+}
+
+sudo ldconfig
+
+mpicc test.c -o test
+mpirun -np 4 test
+
+/////////////////////////////
+커널의 레이지 버디 시스템 떄문에 바로 쉐어드메모리가 해제가 안도니다.
+
+4K->버디
+4K이하는 슬랩
+
+하지만 둘다 버디가 관리한다.
+
+공간이 모자를 때까지 CPU에서 쉐어드메모리는 해제하지 않는다.
+
+페이지 하는 자체가 비용이 굉장히 많이 들어가므로
+페이지를 여러번 안하게 하려고 레이지하게 동작하게 된다.

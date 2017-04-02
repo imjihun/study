@@ -1,0 +1,105 @@
+셋팅
+1. https://www.microsoft.com/en-us/download/confirmation.aspx?id=6812
+2. 설치 이후 VS 에서 File -> New -> Project
+3. Win32 -> Win 32 Project(빈 프로젝트)
+4. 프로젝트 우클릭 후 속성
+5. 구성 속성 -> 링커 -> 입력 -> 추가 종속성
+   d3d11.lib, d3dx11d.lib, D3DCompiler.lib, Effects11d.lib, dxerr.lib, dxgi.lib
+6. 구성 속성 -> VC++ 디렉토리 -> 라이브러리 디렉토리
+   실행 - DX11 에 Utilities/bin/x64
+   포함 - DX11 에 include
+   라이브러리 - DX11 에 Lib/x64
+
+7. fxc /Fc /0d /Zi /T fx_5_0 /Fo "%(RelativeDir)\%(Filename).fxo" "%(FullP
+
+
+
+집에서절차
+1. VS 2012 설치
+
+2. DX11    설치
+
+3. VS 2012로 DX 설치 디렉토리에 있는 Samples 아래의 Effect 11을 킨다.
+  (이때 VS 기존 버전으로 구동시키면 안되고 반드시 2012 버전으로 구동!)
+  위치는 C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Samples\C++  \Effects11
+  의 위치에서 솔루션 파일을 2012버전으로 열면된다.
+
+4. 그러면 맨 위쪽에 설정이 Auto 나오고 Debug 나오고
+  x86 혹은 win32 표시가 있을 것이다.
+  이것을 우리가 사용하는 운영체제가 64비트이므로
+  x64 로 수정해줘야 한다.
+  Win32 부분의 화살표를 누르면 아래쪽에 x64를 선택할 수 있다.
+  이 부분을 선택하고 Build에서 Build Solution을 눌러준다.
+  (반드시 x64에 설정을 맞춰놓고 해야한다.)
+  관리자 권한으로 실행해줘야 한다고 메시지가 나오는데
+  무시하지 말고 반드시 관리자 권한으로 실행해야 한다.
+
+5. Effect 프로젝트를 열었던 위치에 x64 디렉토리가 생성된다.
+  여기 안에 보면 Debug디렉토리가 있다.
+  그 안에 잘 찾아보면 Effects11.lib 파일이 존재할 것이다.
+  이 녀석의 이름을 Effects11d.lib로 변경해준다.
+  그리고 ctrl+c를 눌러서 복사한다.
+
+6. 카카오톡을 통해 다운받은 코드 쪽에 보면 Common 디렉토리가 보일 것이다.
+  이 디렉토리에 가서 방금 복사한 내용을 붙여넣기 한다.
+  (덮어쓴다.)
+
+7. 이제 카톡을 통해 다운 받은 코드에서 6번째 부분에 들어가보자
+  C:\Users\Bitcamp\Desktop\d3d11CodeSet1\Chapter 6 Drawing in Direct3D
+  여기 안에 보면 Box, Hill등 여러가지가 보일 것이다.
+  Box에 들어가 보도록 한다.(가장 쉬운 예제)
+  여기서 마찬가지로 프로젝트 파일을 VS 2012버전으로 구동 시키도록 한다.
+
+8. Project -> Properties을 누른다.
+  Configuration Properties에 있는 VC++ Directories를 누른다
+  Executable Directories 에 DX 11을 설치한 위치에 있는 Utilities 아래의 bin 아래의 x64를 지정한다.
+
+
+
+Project
+
+
+//////////////////////////////////////////////////////////
+cpu	-> hdd, keyboard, mouse, network
+	-> gpu -> monitor
+
+//
+video memory->그래픽처리
+system memory -> 프로세스처리
+
+//
+dsp와 dx11과 아키텍쳐가 똑같다.
+veiw
+
+//
+COM객체는 똥이다.
+new와 delete를 안쓴다.
+
+//
+텍스쳐는 껍데기다
+
+
+//////////////////////////////////////////////////////////////
+(F12 찾아갈수있다 드라이빙)
+
+cat /proc/cpuinfo
+
+	SSE(128bit)<- 이게나오면 기본
+	AVX(256bit)<- 이게 나오면 컴퓨터가 좋은거다
+	AVX2(512bit)<- 이게나오면 개좋은거
+를 보면 알수 있다.
+
+
+d3dApp
+{
+	//폭이랑 높이값 비율 조절해주는 함수(모니터에서)
+	float     AspectRatio()const;
+
+
+	//시스템콜과 비슷하다, 윈도우로 요청이 들어오는 시스템콜들을 루프돌면서 감지해서 처리하는 함수라고 보면 된다.
+	virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+}
+
+//////////
+부록 윈도우프로그래밍 할떄는
+구글에 검색 후 msdn이나 soen.kr(winapi를 하는 분중에 가장 유명하신 분이 운영하는 사이트)을 보는게 가장좋다

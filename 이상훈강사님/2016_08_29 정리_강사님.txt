@@ -1,0 +1,164 @@
+ms = 10^-3 (밀리세컨드)
+us = 10^-6 (마이크로세컨드)
+ns = 10^-9 (나노세컨드)
+
+usleep(50000) 의 경우
+
+5 * 10^4 * 10^-6 = 5 * 10^-2
+
+즉, 0.05 초 단위마다 printf 가 출력되는것
+(하지만 I/O 연산 특성상 정확히 0.05초가 지켜질 수 없음)
+
+단순히 프로그래밍적으로 연산만 수행한다면
+0.05초가 지켜지겠지만 printf 를 수행하므로
+0.05초가 지켜지지 못한다는 점을 파악해야함
+
+그리고 자식쪽에 sleep(5) 는 정확하게 5초를 대기하는것
+
+signal(SIGCHLD, mysig) 의 경우는
+이전에 C 언어를 학습할 때 함수 포인터를 상기하면 된다.
+
+void (* signal(int signum, void (* handler)(int)))(int)
+
+프로토타입을 재 해석하면 아래와 같이 적을 수 있다.
+
+void (*)(int) 를 반환하며
+인자로 int signum 과 void (* handler)(int) 를 취하는
+함수 signal 이라고 적을 수 있을 것이다.
+
+그렇다면 signum 과 handler 는 무엇일까 ?
+signum 은 signal 의 번호가 되며
+handler 는 해당하는 signal 이 들어왔을 때
+어떤 동작을 취할지
+미리 지침서를 만들어둔것과 같은 것이다.
+
+
+
+wait() 와 waitpid() 의 차이점
+wait() 의 경우에는 Blocking 으로 동작하며
+waitpid() 의 경우에는 Non-Blocking 방식으로 동작한다.
+
+우선 wait()로 구동될 경우 심각한 문제가 되는 것은
+네트워크 상으로 연결된 모든 Client(클라이언트) 들은
+1개의 서버에 몇천 몇만개 혹은 그 이상으로 물려 있을 수 있다.
+이뜻은 fork() 를 수행한 횟수가 저만큼 된다는 뜻이다.
+즉, 프로세스의 갯수가 저만큼 있는건데
+얘네들이 Context Switching 을 수행하면서 동작하는 와중에
+한 녀석에 의해 wait() 를 처리하게 되면
+Blocking 연산이므로 다른 프로세스들은 CPU 를 할당받지 못한다.
+그러면 당연히 신호를 보내도
+CPU 가 이 신호를 받을 시간이 없으므로 신호가 씹힌다.
+이러한 부분을 해결하기 위해 waitpid() 를 통해
+Non-Blocking 메커니즘으로 처리를 하면
+어떤 신호든지 즉각 즉각 받을 수 있기 때문에
+신호가 씹히는 현상을 없앨 수 있다.
+
+
+
+gcc ~~~.c
+./a.out &
+
+ps -ef | grep a.out | grep -v grep
+
+터미널을 2개 띄운다.
+한쪽에서는 sleep(1000) 이 구동되도록 ./a.out & 을 수행하고
+
+다른 한쪽은 아래의 코드를 실행해보도록 한다.
+
+gcc -o damon_test ~~~.c
+
+int main(void)
+{
+	for(;;)
+	{
+		sleep(2);
+		printf("test\n");
+	}
+
+	return 0;
+}
+
+ps -ef | grep damon_test | grep -v grep
+ps -ef | grep a.out | grep -v grep
+
+sleep(1000) 이 구동되고 있는 터미널을 x 표시 눌러서 닫고
+
+ps -ef | grep a.out | grep -v grep
+
+옆에서 무한 루프 돌면서 test 를 계속 뿌리는
+또 다른 터미널을 x 표시 눌러서 닫고
+
+ps -ef | grep damon_test | grep -v grep
+
+signal(SIGSTOP, SIG_IGN);
+
+ps -ef | grep a.out | grep -v grep
+
+kill -9 숫자번호(pid 번호)
+
+
+
+* 파이프라인(Pipeline)
+
+기본적으로 모든 프로세서(CPU, GPU, DSP, MCU 전부다)들은
+모두 파이프라인이라는 Architecture 적인 구조를 가지고 있다.
+(FPGA 를 통해 설계되며 프로세서마다 파이프라인이 다른 이유는
+ FPGA 프로그래머가 프로세서를
+ 어떤 방향으로 설계 했냐에 따라 갈리게 된다)
+
+아무튼 가장 단순한 프로세서의 파이프라인을 살펴보자면
+동작 방식은 아래와 같이 3단계로 구성된다.
+
+1. Fetch
+2. Decode
+3. Execution
+
+Fetch 는 다음에 실행할 명령어를 미리 물어오는 작업이고
+Decode 는 명령어 자체가 2진수로 구성되어 있다보니
+이것을 읽어서 해독해서 어떤 동작을 취해야 하는지
+파악하는 과정에 해당하며
+Execution 은 최종적으로 CPU 가 구동되는 단계를 의미한다.
+또 각각에 1 Clock Cycle 이 소요된다.
+
+Intel 계열의 복잡한 프로세서의 경우에는
+60 단계까지 존재하는 것도 있다.
+ARM 의 경우에는 5 단계, 8 단계 ~ 9 단계등 다양하다.
+
+DSP 나 GPU 의 경우엔 파이프라인이 좀 더 복잡하다.
+특히 GPU 의 경우에는 그래픽 파이프라인이라고해서
+엄청난 작업을 수행하는 로직(FPGA Logic)이 들어있다.
+Direct3D 를 하면서 그래픽 파이프라인이
+뭘 하는지 가볍게 살펴볼 예정이며
+Shader Programming 이란 GPU 어셈블리
+및 그래픽 파이프라인을 제어하는 과정이기도 하다.
+
+중요한것은 파이프라인은
+사실 ILP(Instruction Level Parallelization)을
+극대화하기 위한 메커니즘이였다는 것이다.
+
+ILP 를 극대화하기 위한 방법에는 여러 가지 방식이 있다.
+Instruction Scheduling 에 기반한 방법,
+OoO(Out-of-Order)라는 비순차 실행 방법,
+그리고 파이프라인 기법 등등이 존재한다.
+파이프라인을 활용하는 이유는 글로 작성할 수 없으니
+이 부분은 그림을 통해 살펴보도록 하자!
+(우선 파이프라인은 기계어 단위로 통과하게됨)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

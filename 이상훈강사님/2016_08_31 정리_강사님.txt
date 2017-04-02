@@ -1,0 +1,77 @@
+* 설정 리스트
+
+1. https://www.microsoft.com/en-us/download/confirmation.aspx?id=6812
+2. 설치 이후 VS 에서 File -> New -> Project
+3. Win32 -> Win 32 Project(빈 프로젝트)
+4. 프로젝트 우클릭 후 속성
+5. 구성 속성 -> 링커 -> 입력 -> 추가 종속성
+   d3d11.lib, d3dx11d.lib, D3DCompiler.lib, Effects11d.lib, dxerr.lib, dxgi.lib
+6. 구성 속성 -> VC++ 디렉토리 -> 라이브러리 디렉토리
+   실행 - DX11 에 Utilities/bin/x64
+   포함 - DX11 에 include
+   라이브러리 - DX11 에 Lib/x64
+
+7. fxc /Fc /Od /Zi /T fx_5_0 /Fo "%(RelativeDir)\%(Filename).fxo" "%(FullPath)"
+
+
+
+* 집에서 DX 11 설치해서 진행할 때 절차
+
+1. VS 2012 를 설치한다.
+
+2. DX 11 을 설치한다.
+
+3. VS 2012 로 DX 설치 디렉토리에 있는 Samples 아래의 Effect 11 을 킨다.
+   (이때 VS 기존 버전으로 구동시키면 안되고 반드시 2012 버전으로 구동!)
+   위치는 C:\Program Files (x86)\
+   Microsoft DirectX SDK (June 2010)\Samples\C++\Effects11
+   위의 위치에서 솔루션 파일을 2012 버전으로 열면 된다.
+
+4. 그러면 맨 위쪽에 설정이 Auto 나오고 Debug 나오고
+   x86 혹은 Win32 표시가 있을 것이다.
+   이것을 우리가 사용하는 운영체제가 64 비트이므로
+   x64 로 수정해줘야 한다.
+   Win32 부분의 화살표를 누르면 아래쪽에 x64 를 선택할 수 있다.
+   이 부분을 선택하고 Build 에서 Build Solution 을 눌러준다.
+   (반드시 x64 에 설정을 맞춰놓고 해야 한다)
+   관리자 권한으로 실행해줘야 한다고 메시지가 나오는데
+   무시하지 말고 반드시 관리자 권한으로 실행해야 한다.
+
+5. Effect 프로젝트를 열었던 위치에 x64 디렉토리가 생성된다.
+   여기 안에 보면 Debug 디렉토리가 있다.
+   그 안에 잘 찾아보면 Effects11.lib 파일이 존재할 것이다.
+   이 녀석의 이름을 Effects11d.lib 으로 변경해준다.
+   그리고 Ctrl + C 를 눌러서 복사한다.
+
+6. 카카오톡을 통해 다운 받은 코드쪽에 보면
+   Common 디렉토리가 보일 것이다.
+   이 디렉토리에 가서 방금 복사한 내용을 붙여넣기 한다.
+   (덮어쓰겠냐고 물을텐데 당연히 OK)
+
+7. 이제 카톡을 통해 다운 받은 코드에서 6 번째 부분에 들어가보자!
+   C:\DX\d3d11CodeSet1\Chapter 6 Drawing in Direct3D 임
+   여기 안에 보면 Box, Hill 등 여러가지가 보일 것이다.
+   Box 에 들어가보도록 한다(가장 쉬운 기본 예제임)
+   여기서 마찬가지로 프로젝트 파일을 VS 2012 버전으로 구동시키도록 한다.
+
+8. Project -> Properties(속성) 을 누른다.
+   Configuration Properties 에 있는 VC++ Directories 를 누른다.
+   Executable Directories 에 DX 11 을 설치한 위치에 있는
+   Utlities 아래의 bin 아래의 x64 를 지정한다.
+   클릭 클릭으로 설치한 경우에는 아래의 위치다.
+   C:\Program Files (x86)\
+   Microsoft DirectX SDK (June 2010)\Utilities\bin\x64
+   Include Directories 부분도 설정을 해야 하는데
+   DX 11 에 있는 Include 를 가져오면 된다.
+   C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include
+   그리고 추가적으로 카톡에서 다운 받은 코드에 Common 도 입력한다.
+   C:\DX\d3d11CodeSet1\Common
+   마지막으로 Library Directories 부분을 설정한다.
+   DX 11 에 있는 Lib 에 x64 를 설정한다.
+   C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x64
+   또한 Common 도 다시 추가해야 한다(Effect11d.lib 있던 위치)
+   C:\DX\d3d11CodeSet1\Common
+   그리고 적용을 한 이후 컴파일 하면 창이 뜰 것이다.
+
+
+

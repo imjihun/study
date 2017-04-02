@@ -1,0 +1,3 @@
+task_struct
+	nsproxy
+		socket
